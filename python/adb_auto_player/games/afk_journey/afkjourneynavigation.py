@@ -23,6 +23,7 @@ class AFKJourneyNavigation(Game, ABC):
     CENTER_POINT = Point(x=1080 // 2, y=1920 // 2)
     RESONATING_HALL_POINT = Point(x=620, y=1830)
     BATTLE_MODES_POINT = Point(x=460, y=1830)
+    GUILD_POINT = Point(x=780, y=1830)
 
     def navigate_to_default_state(
         self,
@@ -377,3 +378,58 @@ class AFKJourneyNavigation(Game, ABC):
             delay=1,
         )
         return
+
+    def navigate_to_guild(self):
+        """Navigate to Guild screen."""
+        logging.info("Navigating to Guild screen")
+        self.navigate_to_default_state()
+        attempt = 0
+        max_attempts = 3
+
+        self.tap(self.GUILD_POINT, scale=True)
+        sleep(4)
+
+        while True:
+            if attempt >= max_attempts:
+                raise GameActionFailedError("Failed to navigate to Guild screen.")
+            attempt += 1
+
+            match = self.game_find_template_match(
+                template="guild/guild_rank.png",
+                crop_regions=CropRegions(left=0.8, bottom=0.8),
+                threshold=ConfidenceValue("75%"),
+            )
+
+            if match is not None:
+                break
+
+            logging.info(match)
+
+            logging.info("Guild screen not found, trying again.")
+            self.tap(self.GUILD_POINT, scale=True)
+            sleep(4)
+
+    def navigate_to_guild_members(self):
+        """Navigate to Guild Members screen."""
+        logging.info("Navigating to Guild Members screen")
+        attempt = 0
+        max_attempts = 3
+
+        self.tap(Point(x=250, y=150), scale=True)
+        sleep(4)
+
+        while True:
+            if attempt >= max_attempts:
+                raise GameActionFailedError(
+                    "Failed to navigate to Guild Members screen."
+                )
+            attempt += 1
+
+            if self.game_find_template_match(
+                template="guild/guild_member_list_activeness.png",
+            ):
+                break
+
+            self.navigate_to_guild()
+            self.tap(Point(x=250, y=150), scale=True)
+            sleep(4)

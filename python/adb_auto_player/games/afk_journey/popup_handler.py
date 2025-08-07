@@ -5,8 +5,8 @@ from abc import ABC
 from dataclasses import dataclass
 
 import numpy as np
-from adb_auto_player import Game
 from adb_auto_player.exceptions import AutoPlayerWarningError
+from adb_auto_player.game import Game
 from adb_auto_player.image_manipulation import Color, ColorFormat
 from adb_auto_player.models import ConfidenceValue
 from adb_auto_player.models.geometry import Point
@@ -119,6 +119,13 @@ misc_messages = [
     PopupMessage(
         text="Are you sure you want to exit the game",
         click_dont_remind_me=False,
+    ),
+    PopupMessage(
+        # could just throw an exception here
+        text="Daily Instant AFK attempt limit reached",
+        # Daily Instant AFK attempt limit reached.
+        # Available again after the cooldown ends.
+        ignore=True,
     ),
 ]
 

@@ -154,6 +154,33 @@ def parse_power_to_int(text: str) -> int | None:
         return None
 
 
+def suppress_vertical_band(res: np.ndarray, y: int, gap: int) -> None:
+    y1 = clamp(y - gap // 2, 0, res.shape[0] - 1)
+    y2 = clamp(y + gap // 2, 0, res.shape[0] - 1)
+    res[y1 : y2 + 1, :] = -1.0
+
+
+def match_rows(
+    gray: np.ndarray, tpl: np.ndarray, cfg: MemberListConfig
+) -> tuple[list[tuple[int, int, float]], int, int]:
+    th, tw = tpl.shape[:2]
+    search_h = int(gray.shape[0] * 0.85)
+    res_full = cv2.matchTemplate(gray[:search_h, :], tpl, cv2.TM_CCOEFF_NORMED)
+    work = res_full.copy()
+
+    picks: list[tuple[int, int, float]] = []
+    for _ in range(cfg.max_passes):
+        _, max_val, _, max_loc = cv2.minMaxLoc(work)
+        if max_val < cfg.match_threshold:
+            break
+        x, y = int(max_loc[0]), int(max_loc[1])
+        picks.append((x, y, float(max_val)))
+        suppress_vertical_band(work, y, cfg.min_row_gap_px)
+
+    picks.sort(key=lambda p: p[1])
+    return picks, th, tw
+
+
 def extract_rois(
     screen_bgr: np.ndarray, px: int, py: int, tw: int, th: int, cfg: MemberListConfig
 ) -> tuple[np.ndarray, np.ndarray, tuple[int, int, int, int]]:

@@ -106,8 +106,7 @@ class AdbController:
 
     def screenshot(self) -> str | bytes:
         """Take screenshot."""
-        with self.d.shell("screencap -p", stream=True) as c:
-            return c.read_until_close(encoding=None)
+        return self.d.screenshot()
 
     def stop_game(self, package_name: str) -> None:
         """Stop game."""
@@ -147,12 +146,7 @@ class AdbController:
         Args:
             coordinates (Coordinates): Point to click on.
         """
-        with self.d.shell(
-            f"input tap {coordinates.x} {coordinates.y}",
-            timeout=3,  # if the click didn't happen in 3 seconds it's never happening
-            stream=True,
-        ) as connection:
-            connection.read_until_close()
+        self.d.tap(str(coordinates.x), str(coordinates.y))
 
     def click(
         self,
@@ -163,52 +157,43 @@ class AdbController:
 
     def press_back_button(self) -> None:
         """Presses the back button."""
-        with self.d.shell("input keyevent 4", stream=True) as connection:
-            connection.read_until_close()
+        self.d.keyevent("4")
 
     def press_enter(self) -> None:
         """Press enter button."""
-        with self.d.shell("input keyevent 66", stream=True) as connection:
-            connection.read_until_close()
+        self.d.keyevent("6")
 
     def swipe(
         self,
         start_point: Coordinates,
         end_point: Coordinates,
         duration: float = 1.0,
-        sleep_duration: float | None = 2.0,
     ) -> None:
         """Swipes the screen.
 
         Args:
             start_point: Start Point on the screen.
             end_point: End Point on the screen.
-            duration: Swipe duration. Defaults to 1.0.
-            sleep_duration: Sleep duration. Defaults to 2.0. No sleep if None
+            duration: Swipe duration in seconds. Defaults to 1.0.
         """
         self.d.swipe(
-            sx=start_point.x,
-            sy=start_point.y,
-            ex=end_point.x,
-            ey=end_point.y,
-            duration=duration,
+            str(start_point.x),
+            str(start_point.y),
+            str(end_point.x),
+            str(end_point.y),
+            str(int(duration * 1000)),
         )
-        if sleep_duration is None:
-            sleep_duration = 1 / 30
-        sleep(sleep_duration)
 
     def hold(
         self,
         coordinates: Coordinates,
         duration: float = 1.0,
-        sleep_duration: float | None = 1 / 30,
     ) -> None:
         """Hold the screen on the given coordinates."""
         self.swipe(
             start_point=coordinates,
             end_point=coordinates,
             duration=duration,
-            sleep_duration=sleep_duration,
         )
 
     @property

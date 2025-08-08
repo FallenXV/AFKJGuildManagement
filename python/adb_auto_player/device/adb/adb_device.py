@@ -54,11 +54,7 @@ class AdbDeviceWrapper:
     ) -> AdbConnection | str | bytes:
         """Swipe with retry."""
         x1, y1, x2, y2 = map(str, [sx, sy, ex, ey])
-        # Added timeout parm to ensure the command has enough time to execute
-        return self.shell(
-            ["input", "swipe", x1, y1, x2, y2, str(int(duration * 1000))],
-            timeout=duration + 3,
-        )
+        return self.shell(["input", "swipe", x1, y1, x2, y2, str(int(duration * 1000))])
 
     def shell_unsafe(
         self,

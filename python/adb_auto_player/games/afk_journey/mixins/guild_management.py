@@ -72,6 +72,7 @@ class MemberListConfig:
     )
 
     def __post_init__(self) -> None:
+        """Populate gender icon templates when none are provided."""
         if self.gender_templates is None:
             templates: dict[str, dict[str, np.ndarray | int | None]] = {}
             for label, pad in {"male": 8, "female": 10}.items():
@@ -209,10 +210,25 @@ def extract_members_from_image(
         logging.warning("power icon template not found")
         return []
 
-    picks, th, tw = match_rows(gray, tpl, cfg)
+    search_h = int(gray.shape[0] * 0.85)
+    matches = TemplateMatcher.find_all_template_matches(
+        base_image=gray[:search_h, :],
+        template_image=tpl,
+        threshold=ConfidenceValue(cfg.match_threshold),
+        min_distance=cfg.min_row_gap_px,
+        grayscale=False,
+    )
+    matches.sort(key=lambda m: m.box.top_left.y)
+    if cfg.max_passes > 0:
+        matches = matches[: cfg.max_passes]
+
     results: list[GuildMemberList] = []
 
-    for px, py, _ in picks:
+    for match in matches:
+        px = match.box.top_left.x
+        py = match.box.top_left.y
+        tw = match.box.width
+        th = match.box.height
         power_roi, name_roi, name_rect = extract_rois(screen_bgr, px, py, tw, th, cfg)
 
         if name_roi.size != 0:

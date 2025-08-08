@@ -25,7 +25,7 @@ class SunlitShowdownMixin(AFKJourneyBase, ABC):
     def attempt_sunlit(self) -> None:
         """Attempt to run Sunlit Showdown Battles."""
         self.start_up()
-        self.navigate_to_default_state()
+        self.navigate_to_world()
 
         logging.info("Attempting to run Sunlit Showdown!")
         logging.warning(
@@ -160,7 +160,6 @@ class SunlitShowdownMixin(AFKJourneyBase, ABC):
                     "No listed hero found, scolling down " + str(scrolls) + "/5"
                 )
                 self.swipe_up(630, 1630, 1340, duration=2)
-                sleep(2)
                 scrolls += 1
             if scrolls > max_scrolls:
                 self.tap(Point(1000, 1625))

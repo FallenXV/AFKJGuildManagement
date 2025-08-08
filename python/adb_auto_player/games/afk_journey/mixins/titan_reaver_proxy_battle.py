@@ -81,12 +81,6 @@ class TitanReaverProxyBattleMixin(AssistMixin):
         """Execute proxy battle automation."""
         self.start_up()
 
-        if self._stream is None:
-            logging.warning(
-                "This feature is quite slow without Device Streaming. "
-                "You may miss proxy battle opportunities."
-            )
-
         logging.warning("@Czesito has quit the game, this is no longer supported.")
 
         stats = TitanReaverProxyBattleStats()
@@ -114,7 +108,7 @@ class TitanReaverProxyBattleMixin(AssistMixin):
                         logging.error(
                             "Too many consecutive failures, resetting to default state"
                         )
-                        self.navigate_to_default_state()
+                        self.navigate_to_world()
                         stats.exception_count = 0
                     sleep(5)  # Wait longer after failure
 
@@ -201,7 +195,6 @@ class TitanReaverProxyBattleMixin(AssistMixin):
     def _swipe_chat_down(self) -> None:
         """Swipe down the chat window."""
         self.swipe_down(1000, 800, 1500)
-        sleep(TitanReaverProxyBattleConstants.NAVIGATION_DELAY)
 
     def _join_proxy_battle(self, banner_location: Point) -> bool:
         """Join proxy battle.

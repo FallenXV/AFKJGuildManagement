@@ -1,4 +1,4 @@
-name: Run - pre-commit
+name: pre-commit
 permissions:
   contents: read
 on:
@@ -10,27 +10,19 @@ on:
 
 jobs:
   pre-commit:
-    name: pre-commit hooks
-    runs-on: ubuntu-latest
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest] # ubuntu-latest ignored for now ceebs
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get -yq update
-          sudo apt-get -yq install libgtk-3-0 libwebkit2gtk-4.1-dev gcc-aarch64-linux-gnu
-
-      - name: Setup Go, Wails, Node, uv, Python
+      - name: Setup Node, uv, Python
         uses: ./.github/actions/setup-tools
 
-      # for Frontend checks
-      - name: npm install
-        run: |
-          cd frontend
-          npm install
-
-      - name: Wails3 build
-        run: wails3 task build
+      - run: pnpm install
 
       - run: uvx pre-commit run --all-files

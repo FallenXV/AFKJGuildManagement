@@ -1,0 +1,389 @@
+> git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file -
+[INFO] Checking merge-conflict files only.
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check json...........................................(no files to check)Skipped
+check yaml...........................................(no files to check)Skipped
+check toml...........................................(no files to check)Skipped
+pretty format json...................................(no files to check)Skipped
+shellcheck...........................................(no files to check)Skipped
+isort....................................................................Passed
+black....................................................................Passed
+ruff (legacy alias)......................................................Passed
+ruff format..............................................................Passed
+ty-check.................................................................Failed
+- hook id: ty
+- exit code: 1
+
+error[unresolved-import]: Cannot resolve imported module `cv2`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:9:8
+   |
+ 7 | from time import sleep
+ 8 |
+ 9 | import cv2
+   |        ^^^
+10 | import numpy as np
+11 | from adb_auto_player.decorators import register_command, register_custom_routine_choice
+   |
+info: Searched in the following paths during module resolution:
+info:   1. C:\Users\wongj\PycharmProjects\AFKJGuildManagement\src (first-party code)
+info:   2. C:\Users\wongj\PycharmProjects\AFKJGuildManagement\python (first-party code)
+info:   3. C:\Users\wongj\PycharmProjects\AFKJGuildManagement (first-party code)
+info:   4. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   5. C:\Users\wongj\AppData\Local\uv\cache\archive-v0\k-vgKcjnXAk56TnZFCOmD\Lib\site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Cannot resolve imported module `numpy`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:10:8
+   |
+ 9 | import cv2
+10 | import numpy as np
+   |        ^^^^^^^^^^^
+11 | from adb_auto_player.decorators import register_command, register_custom_routine_choice
+12 | from adb_auto_player.exceptions import GameTimeoutError
+   |
+info: Searched in the following paths during module resolution:
+info:   1. C:\Users\wongj\PycharmProjects\AFKJGuildManagement\src (first-party code)
+info:   2. C:\Users\wongj\PycharmProjects\AFKJGuildManagement\python (first-party code)
+info:   3. C:\Users\wongj\PycharmProjects\AFKJGuildManagement (first-party code)
+info:   4. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   5. C:\Users\wongj\AppData\Local\uv\cache\archive-v0\k-vgKcjnXAk56TnZFCOmD\Lib\site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.exceptions` has no member `GameTimeoutError`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:12:40
+   |
+10 | import numpy as np
+11 | from adb_auto_player.decorators import register_command, register_custom_routine_choice
+12 | from adb_auto_player.exceptions import GameTimeoutError
+   |                                        ^^^^^^^^^^^^^^^^
+13 | from adb_auto_player.image_manipulation import Cropping
+14 | from adb_auto_player.image_manipulation.color import Color
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.image_manipulation` has no member `Cropping`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:13:48
+   |
+11 | from adb_auto_player.decorators import register_command, register_custom_routine_choice
+12 | from adb_auto_player.exceptions import GameTimeoutError
+13 | from adb_auto_player.image_manipulation import Cropping
+   |                                                ^^^^^^^^
+14 | from adb_auto_player.image_manipulation.color import Color
+15 | from adb_auto_player.image_manipulation.io import IO
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.models` has no member `ConfidenceValue`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:17:36
+   |
+15 | from adb_auto_player.image_manipulation.io import IO
+16 | from adb_auto_player.image_manipulation.scaling import Scaling
+17 | from adb_auto_player.models import ConfidenceValue
+   |                                    ^^^^^^^^^^^^^^^
+18 | from adb_auto_player.models.decorators import GUIMetadata
+19 | from adb_auto_player.models.geometry import Point
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.models.decorators` has no member `GUIMetadata`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:18:47
+   |
+16 | from adb_auto_player.image_manipulation.scaling import Scaling
+17 | from adb_auto_player.models import ConfidenceValue
+18 | from adb_auto_player.models.decorators import GUIMetadata
+   |                                               ^^^^^^^^^^^
+19 | from adb_auto_player.models.geometry import Point
+20 | from adb_auto_player.models.image_manipulation import CropRegions
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.models.geometry` has no member `Point`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:19:45
+   |
+17 | from adb_auto_player.models import ConfidenceValue
+18 | from adb_auto_player.models.decorators import GUIMetadata
+19 | from adb_auto_player.models.geometry import Point
+   |                                             ^^^^^
+20 | from adb_auto_player.models.image_manipulation import CropRegions
+21 | from adb_auto_player.ocr import OEM, PSM, TesseractBackend, TesseractConfig
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.models.image_manipulation` has no member `CropRegions`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:20:55
+   |
+18 | from adb_auto_player.models.decorators import GUIMetadata
+19 | from adb_auto_player.models.geometry import Point
+20 | from adb_auto_player.models.image_manipulation import CropRegions
+   |                                                       ^^^^^^^^^^^
+21 | from adb_auto_player.ocr import OEM, PSM, TesseractBackend, TesseractConfig
+22 | from adb_auto_player.template_matching import TemplateMatcher
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.ocr` has no member `OEM`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:21:33
+   |
+19 | from adb_auto_player.models.geometry import Point
+20 | from adb_auto_player.models.image_manipulation import CropRegions
+21 | from adb_auto_player.ocr import OEM, PSM, TesseractBackend, TesseractConfig
+   |                                 ^^^
+22 | from adb_auto_player.template_matching import TemplateMatcher
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.ocr` has no member `PSM`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:21:38
+   |
+19 | from adb_auto_player.models.geometry import Point
+20 | from adb_auto_player.models.image_manipulation import CropRegions
+21 | from adb_auto_player.ocr import OEM, PSM, TesseractBackend, TesseractConfig
+   |                                      ^^^
+22 | from adb_auto_player.template_matching import TemplateMatcher
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.ocr` has no member `TesseractBackend`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:21:43
+   |
+19 | from adb_auto_player.models.geometry import Point
+20 | from adb_auto_player.models.image_manipulation import CropRegions
+21 | from adb_auto_player.ocr import OEM, PSM, TesseractBackend, TesseractConfig
+   |                                           ^^^^^^^^^^^^^^^^
+22 | from adb_auto_player.template_matching import TemplateMatcher
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.ocr` has no member `TesseractConfig`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:21:61
+   |
+19 | from adb_auto_player.models.geometry import Point
+20 | from adb_auto_player.models.image_manipulation import CropRegions
+21 | from adb_auto_player.ocr import OEM, PSM, TesseractBackend, TesseractConfig
+   |                                                             ^^^^^^^^^^^^^^^
+22 | from adb_auto_player.template_matching import TemplateMatcher
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.template_matching` has no member `TemplateMatcher`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:22:47
+   |
+20 | from adb_auto_player.models.image_manipulation import CropRegions
+21 | from adb_auto_player.ocr import OEM, PSM, TesseractBackend, TesseractConfig
+22 | from adb_auto_player.template_matching import TemplateMatcher
+   |                                               ^^^^^^^^^^^^^^^
+23 |
+24 | from ..base import AFKJourneyBase
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Cannot resolve imported module `..base`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:24:8
+   |
+22 | from adb_auto_player.template_matching import TemplateMatcher
+23 |
+24 | from ..base import AFKJourneyBase
+   |        ^^^^
+25 | from ..gui_category import AFKJCategory
+   |
+info: Searched in the following paths during module resolution:
+info:   1. C:\Users\wongj\PycharmProjects\AFKJGuildManagement\src (first-party code)
+info:   2. C:\Users\wongj\PycharmProjects\AFKJGuildManagement\python (first-party code)
+info:   3. C:\Users\wongj\PycharmProjects\AFKJGuildManagement (first-party code)
+info:   4. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   5. C:\Users\wongj\AppData\Local\uv\cache\archive-v0\k-vgKcjnXAk56TnZFCOmD\Lib\site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Cannot resolve imported module `..gui_category`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:25:8
+   |
+24 | from ..base import AFKJourneyBase
+25 | from ..gui_category import AFKJCategory
+   |        ^^^^^^^^^^^^
+   |
+info: Searched in the following paths during module resolution:
+info:   1. C:\Users\wongj\PycharmProjects\AFKJGuildManagement\src (first-party code)
+info:   2. C:\Users\wongj\PycharmProjects\AFKJGuildManagement\python (first-party code)
+info:   3. C:\Users\wongj\PycharmProjects\AFKJGuildManagement (first-party code)
+info:   4. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   5. C:\Users\wongj\AppData\Local\uv\cache\archive-v0\k-vgKcjnXAk56TnZFCOmD\Lib\site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+info: rule `unresolved-import` is enabled by default
+
+error[invalid-argument-type]: Argument to function `compute_badge_shift` is incorrect
+   --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:236:17
+    |
+234 |             badge_shift = compute_badge_shift(
+235 |                 Color.to_grayscale(name_roi),
+236 |                 cfg.gender_templates,
+    |                 ^^^^^^^^^^^^^^^^^^^^ Expected `dict[Unknown, Unknown]`, found `dict[Unknown, Unknown] | None`
+237 |                 cfg.gender_match_threshold,
+238 |             )
+    |
+info: Element `None` of this union is not assignable to `dict[Unknown, Unknown]`
+info: Function defined here
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:97:5
+   |
+97 | def compute_badge_shift(name_gray: np.ndarray, templates: dict, thr: float) -> int:
+   |     ^^^^^^^^^^^^^^^^^^^                        --------------- Parameter declared here
+98 |     fixed_shift_map = {"male": 36, "female": 48}
+99 |     best_label, best_val = None, 0.0
+   |
+info: rule `invalid-argument-type` is enabled by default
+
+error[call-non-callable]: Object of type `<module 'adb_auto_player.decorators.register_command'>` is not callable
+   --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:267:6
+    |
+265 |       """AFK Journey Guild Management."""
+266 |
+267 |       @register_command(
+    |  ______^
+268 | |         name="GuildManagement",
+269 | |         gui=GUIMetadata(
+270 | |             label="Guild Management",
+271 | |             category=AFKJCategory.EVENTS_AND_OTHER,
+272 | |             tooltip="AFK Journey Guild Management",
+273 | |         ),
+274 | |     )
+    | |_____^
+275 |       @register_custom_routine_choice(label="Guild Management")
+276 |       def manage_guild(self) -> None:
+    |
+info: rule `call-non-callable` is enabled by default
+
+error[call-non-callable]: Object of type `<module 'adb_auto_player.decorators.register_custom_routine_choice'>` is not callable
+   --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:275:6
+    |
+273 |         ),
+274 |     )
+275 |     @register_custom_routine_choice(label="Guild Management")
+    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+276 |     def manage_guild(self) -> None:
+277 |         """Manage Guild."""
+    |
+info: rule `call-non-callable` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.exceptions` has no member `AutoPlayerError`
+ --> src-tauri\src-python\adb_auto_player\games\afk_journey\navigation.py:7:5
+  |
+6 | from adb_auto_player.exceptions import (
+7 |     AutoPlayerError,
+  |     ^^^^^^^^^^^^^^^
+8 |     GameActionFailedError,
+9 |     GameNotRunningOrFrozenError,
+  |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.exceptions` has no member `GameActionFailedError`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\navigation.py:8:5
+   |
+ 6 | from adb_auto_player.exceptions import (
+ 7 |     AutoPlayerError,
+ 8 |     GameActionFailedError,
+   |     ^^^^^^^^^^^^^^^^^^^^^
+ 9 |     GameNotRunningOrFrozenError,
+10 |     GameTimeoutError,
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.exceptions` has no member `GameNotRunningOrFrozenError`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\navigation.py:9:5
+   |
+ 7 |     AutoPlayerError,
+ 8 |     GameActionFailedError,
+ 9 |     GameNotRunningOrFrozenError,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+10 |     GameTimeoutError,
+11 | )
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.exceptions` has no member `GameTimeoutError`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\navigation.py:10:5
+   |
+ 8 |     GameActionFailedError,
+ 9 |     GameNotRunningOrFrozenError,
+10 |     GameTimeoutError,
+   |     ^^^^^^^^^^^^^^^^
+11 | )
+12 | from adb_auto_player.models import ConfidenceValue
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.models` has no member `ConfidenceValue`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\navigation.py:12:36
+   |
+10 |     GameTimeoutError,
+11 | )
+12 | from adb_auto_player.models import ConfidenceValue
+   |                                    ^^^^^^^^^^^^^^^
+13 | from adb_auto_player.models.geometry import Point
+14 | from adb_auto_player.models.image_manipulation import CropRegions
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.models.geometry` has no member `Point`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\navigation.py:13:45
+   |
+11 | )
+12 | from adb_auto_player.models import ConfidenceValue
+13 | from adb_auto_player.models.geometry import Point
+   |                                             ^^^^^
+14 | from adb_auto_player.models.image_manipulation import CropRegions
+15 | from adb_auto_player.models.template_matching import TemplateMatchResult
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.models.image_manipulation` has no member `CropRegions`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\navigation.py:14:55
+   |
+12 | from adb_auto_player.models import ConfidenceValue
+13 | from adb_auto_player.models.geometry import Point
+14 | from adb_auto_player.models.image_manipulation import CropRegions
+   |                                                       ^^^^^^^^^^^
+15 | from adb_auto_player.models.template_matching import TemplateMatchResult
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Module `adb_auto_player.models.template_matching` has no member `TemplateMatchResult`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\navigation.py:15:54
+   |
+13 | from adb_auto_player.models.geometry import Point
+14 | from adb_auto_player.models.image_manipulation import CropRegions
+15 | from adb_auto_player.models.template_matching import TemplateMatchResult
+   |                                                      ^^^^^^^^^^^^^^^^^^^
+16 |
+17 | from .popup_message_handler import PopupMessageHandler
+   |
+info: rule `unresolved-import` is enabled by default
+
+error[unresolved-import]: Cannot resolve imported module `.popup_message_handler`
+  --> src-tauri\src-python\adb_auto_player\games\afk_journey\navigation.py:17:7
+   |
+15 | from adb_auto_player.models.template_matching import TemplateMatchResult
+16 |
+17 | from .popup_message_handler import PopupMessageHandler
+   |       ^^^^^^^^^^^^^^^^^^^^^
+   |
+info: Searched in the following paths during module resolution:
+info:   1. C:\Users\wongj\PycharmProjects\AFKJGuildManagement\src (first-party code)
+info:   2. C:\Users\wongj\PycharmProjects\AFKJGuildManagement\python (first-party code)
+info:   3. C:\Users\wongj\PycharmProjects\AFKJGuildManagement (first-party code)
+info:   4. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   5. C:\Users\wongj\AppData\Local\uv\cache\archive-v0\k-vgKcjnXAk56TnZFCOmD\Lib\site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+info: rule `unresolved-import` is enabled by default
+
+Found 27 diagnostics
+
+uv-lock..............................................(no files to check)Skipped
+fmt..................................................(no files to check)Skipped
+clippy...............................................(no files to check)Skipped
+cargo check..........................................(no files to check)Skipped
+prettier.............................................(no files to check)Skipped
+svelte-check.........................................(no files to check)Skipped
+Ensure only PNG images...............................(no files to check)Skipped

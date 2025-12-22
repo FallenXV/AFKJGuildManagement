@@ -1,0 +1,81 @@
+> git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file -
+[INFO] Checking merge-conflict files only.
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check json...........................................(no files to check)Skipped
+check yaml...............................................................Passed
+check toml...........................................(no files to check)Skipped
+pretty format json...................................(no files to check)Skipped
+shellcheck...........................................(no files to check)Skipped
+isort....................................................................Passed
+black....................................................................Passed
+ruff (legacy alias)......................................................Passed
+ruff format..............................................................Passed
+ty-check.................................................................Failed
+- hook id: ty
+- exit code: 1
+
+Downloading cpython-3.14.2-windows-x86_64-none (download) (21.2MiB)
+ Downloaded cpython-3.14.2-windows-x86_64-none (download)
+Using CPython 3.14.2
+Creating virtual environment at: .venv
+   Building adb-auto-player @ file:///C:/Users/wongj/PycharmProjects/AFKJGuildManagement/src-tauri
+Downloading ty (9.2MiB)
+Downloading adbutils (3.2MiB)
+Downloading av (30.8MiB)
+Downloading pillow (6.8MiB)
+Downloading pydantic-core (1.9MiB)
+ Downloaded pydantic-core
+ Downloaded adbutils
+ Downloaded pillow
+ Downloaded ty
+ Downloaded av
+   Building numpy==2.2.6
+      Built adb-auto-player @ file:///C:/Users/wongj/PycharmProjects/AFKJGuildManagement/src-tauri
+      Built numpy==2.2.6
+Installed 35 packages in 412ms
+error[no-matching-overload]: No overload of function `matchTemplate` matches arguments
+   --> src-tauri\src-python\adb_auto_player\games\afk_journey\mixins\guild_management.py:114:15
+    |
+112 |         if tpl is None:
+113 |             continue
+114 |         res = cv2.matchTemplate(name_gray, tpl, cv2.TM_CCOEFF_NORMED)
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+115 |         if res.size == 0:
+116 |             continue
+    |
+info: First overload defined here
+    --> .venv\Lib\site-packages\cv2\__init__.pyi:5892:5
+     |
+5891 | @_typing.overload
+5892 | def matchTemplate(image: cv2.typing.MatLike, templ: cv2.typing.MatLike, method: int, result: cv2.typing.MatLike | None = ..., mask: cv2.typing.MatLike | None = ...) -> cv2.typing.MatLike: ...
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5893 | @_typing.overload
+5894 | def matchTemplate(image: UMat, templ: UMat, method: int, result: UMat | None = ..., mask: UMat | None = ...) -> UMat: ...
+     |
+info: Possible overloads for function `matchTemplate`:
+info:   (image: ndarray[Any, dtype[integer[Any] | floating[Any]]], templ: ndarray[Any, dtype[integer[Any] | floating[Any]]], method: int, result: ndarray[Any, dtype[integer[Any] | floating[Any]]] | None = EllipsisType, mask: ndarray[Any, dtype[integer[Any] | floating[Any]]] | None = EllipsisType) -> ndarray[Any, dtype[integer[Any] | floating[Any]]]
+info:   (image: UMat, templ: UMat, method: int, result: UMat | None = EllipsisType, mask: UMat | None = EllipsisType) -> UMat
+info: rule `no-matching-overload` is enabled by default
+
+error[unresolved-attribute]: Object of type `Self@navigate_to_guild` has no attribute `navigate_to_default_state`
+   --> src-tauri\src-python\adb_auto_player\games\afk_journey\navigation.py:437:9
+    |
+435 |         """Navigate to Guild screen."""
+436 |         logging.info("Navigating to Guild screen")
+437 |         self.navigate_to_default_state()
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+438 |         attempt = 0
+439 |         max_attempts = 3
+    |
+info: rule `unresolved-attribute` is enabled by default
+
+Found 2 diagnostics
+
+uv-lock..............................................(no files to check)Skipped
+fmt..................................................(no files to check)Skipped
+clippy...............................................(no files to check)Skipped
+cargo check..........................................(no files to check)Skipped
+prettier.............................................(no files to check)Skipped
+svelte-check.........................................(no files to check)Skipped
+Ensure only PNG images...............................(no files to check)Skipped

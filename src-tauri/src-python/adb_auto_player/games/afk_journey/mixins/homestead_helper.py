@@ -17,6 +17,11 @@ from adb_auto_player.models.geometry import Offset, Point
 from adb_auto_player.ocr import PSM, TesseractBackend, TesseractConfig
 from adb_auto_player.util import SummaryGenerator
 
+# TODO: make every macro functions into blocks so they can be deployed repeatedly
+# TODO: change navigation method from overview button to requests
+# TODO: add static tap for orders
+# TODO: fix lack of material handling
+
 
 class HomesteadHelperMixin(AFKJourneyBase):
     """Homestead helper mixin."""
@@ -83,6 +88,7 @@ class HomesteadHelperMixin(AFKJourneyBase):
 
         while True:
             self.navigate_to_homestead_overview()
+            crafted_this_cycle = 0
             for building_template in building_templates:
                 remaining_crafts = (
                     self.settings.homestead.craft_item_limit - crafted_count
@@ -101,10 +107,15 @@ class HomesteadHelperMixin(AFKJourneyBase):
                     remaining_crafts=remaining_crafts,
                 )
                 crafted_count += crafted
+                crafted_this_cycle += crafted
                 if limit_reached:
                     logging.info("Craft item limit reached: %s", crafted_count)
                     self.navigate_to_homestead()
                     return
+            logging.info(
+                "Production cycle complete: crafted %s item(s) across all buildings.",
+                crafted_this_cycle,
+            )
             self.navigate_to_homestead()
             sold_count = self._handle_order_selling()
             if sold_count:
@@ -112,10 +123,10 @@ class HomesteadHelperMixin(AFKJourneyBase):
 
     def navigate_to_homestead_overview(self) -> None:
         """Navigate to the Homestead overview screen."""
-        logging.info("Navigating to Homestead overview...")
         self._with_retries(
             action=self._open_homestead_overview,
             failure_log="Failed to reach Homestead overview, retrying navigation.",
+            on_retry=self.navigate_to_homestead,
         )
         self._enter_production_buildings_section()
 
@@ -206,13 +217,14 @@ class HomesteadHelperMixin(AFKJourneyBase):
             self.tap(production_button)
             sleep(2)
 
+        def retry_production_section() -> None:
+            self.tap(self.HOMESTEAD_BUILDINGS_SECTION_POINT)
+            sleep(2)
+
         self._with_retries(
             action=open_production,
             failure_log="Failed to enter production buildings, retrying from overview.",
-            on_retry=lambda: (
-                self.tap(self.HOMESTEAD_BUILDINGS_SECTION_POINT),
-                sleep(2),
-            ),
+            on_retry=retry_production_section,
         )
 
     def _handle_crafting_requests(

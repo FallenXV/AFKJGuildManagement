@@ -144,7 +144,7 @@ class HomesteadSettings(BaseModel):
     """Homestead Settings model."""
 
     craft_item_limit: PositiveInt = Field(
-        default=80,
+        default=180,
         alias="Craft Item Limit",
         title="Craft Item Limit",
     )

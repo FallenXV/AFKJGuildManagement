@@ -47,11 +47,14 @@ Repeat = true
 "Spend Gold" = false
 
 ["Guild Manager Scan"]
-"Guild Members API URL" = "https://clcozchimagtnzohuvsk.supabase.co/rest/v1/guild_states?id=eq.citadel-chqp&select=state&apikey=sb_publishable_LVK-OqTDRQ572wbfDaMqDQ_-7xxdv6n"
+"Guild Members API URL" = "https://clcozchimagtnzohuvsk.supabase.co/rest/v1/guild_states?id=eq.phoenix&select=state&apikey=sb_publishable_LVK-OqTDRQ572wbfDaMqDQ_-7xxdv6n"
 "Days to Scan" = 1
 "Scan Supreme Arena" = true
-"Scan Guild Activeness" = false
+"Scan Guild Activeness" = true
 "Scan DR Today on Sunday" = false
+"Ignore Day Restrictions" = true
+"Use Qwen2-VL (GPU)" = true
+"Confirm Qwen2-VL Download (~2.2 GB)" = true
 "Debug OCR Output" = true
 
 ["Dura's Trials"]

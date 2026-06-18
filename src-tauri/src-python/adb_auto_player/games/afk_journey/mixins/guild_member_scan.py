@@ -1007,6 +1007,8 @@ class GuildMemberScanMixin(BaseClass):
         name: str,
         cleaned_members: list[tuple[str, str]],
         suffix_pat: re.Pattern,
+        *,
+        allow_hangul_floor: bool = True,
     ) -> tuple[str, float]:
         """Find the closest guild member match and returns (best_match, ratio)."""
         name_clean = self._clean_member_name(name, suffix_pat)
@@ -1028,16 +1030,18 @@ class GuildMemberScanMixin(BaseClass):
                 if len(korean_members) == 1:
                     return korean_members[0], 1.0
                 # Multiple Hangul members: pick the best fuzzy match.
-                # For CJK misreads the ratio will be low for all; we still
-                # return the closest one with enough confidence to clear the
-                # _GUILD_NAME_CORRECTION_THRESHOLD (0.65).
+                # Most callers allow a small floor for CJK/Korean recovery,
+                # but rankings row-crop recovery can opt out to avoid
+                # over-matching unrelated Hangul text.
                 best_k, best_k_ratio = korean_members[0], 0.0
                 for km in korean_members:
                     kmc = self._clean_member_name(km, suffix_pat)
                     r = SequenceMatcher(None, name_clean, kmc).ratio()
                     if r > best_k_ratio:
                         best_k_ratio, best_k = r, km
-                return best_k, max(best_k_ratio, 0.7)
+                if allow_hangul_floor:
+                    return best_k, max(best_k_ratio, 0.7)
+                return best_k, best_k_ratio
 
         if not name_clean:
             return name, 0.0
@@ -1356,6 +1360,7 @@ class GuildMemberScanMixin(BaseClass):
     ) -> list[tuple[str | None, str | None, str | None]]:
         # Determine the valid Y scan region (same logic for both paths)
         y_min = self._Y_MIN_RANKINGS
+        backend_used = "rapidocr"
         if is_supreme_arena:
             # The SA podium (decorative top-3 display) ends at ~y=600 and is
             # present in ALL frames. Always crop at y=700 so neither bbox nor
@@ -1438,8 +1443,14 @@ class GuildMemberScanMixin(BaseClass):
 
                 # Qwen row-crop recovery for names bbox misread as Latin
                 # (e.g. ОпасныйПоцык rendered in game font → OnacHbINlo1IbIK).
+                # Safe to fuzzy-resolve here because the rankings list has
+                # already been filtered to Guild Members before recovery runs.
                 qwen_recovered = self._recover_supplement_names_qwen(
-                    screenshot, bbox_debug, guild_set, supplemental, ocr_backend
+                    screenshot,
+                    bbox_debug,
+                    supplemental,
+                    ocr_backend,
+                    getattr(self, "_guild_members", None) or list(guild_set),
                 )
 
                 if self._ocr_debug is not None:
@@ -1451,6 +1462,7 @@ class GuildMemberScanMixin(BaseClass):
                     self._ocr_debug.append(
                         {
                             "backend": backend_name,
+                            "backend_used": "qwen",
                             "is_supreme_arena": is_supreme_arena,
                             "is_first_frame": is_first_frame,
                             "y_min": llm_y_min,
@@ -1489,6 +1501,7 @@ class GuildMemberScanMixin(BaseClass):
         if self._ocr_debug is not None:
             self._ocr_debug.append(
                 {
+                    "backend_used": backend_used,
                     "is_supreme_arena": is_supreme_arena,
                     "is_first_frame": is_first_frame,
                     "y_min": y_min,
@@ -1573,9 +1586,9 @@ class GuildMemberScanMixin(BaseClass):
         self,
         screenshot,
         bbox_debug: list[dict],
-        guild_set: set[str],
         supplemental: list,
         ocr_backend: QwenVLOCRBackend,
+        guild_members: list[str],
         max_recovery: int = 3,
     ) -> list[dict]:
         """Crop each bbox row whose name isn't in guild_set and ask Qwen.
@@ -1584,6 +1597,14 @@ class GuildMemberScanMixin(BaseClass):
         (e.g. ОпасныйПоцык → OnacHbINlo1IbIK). Returns a list of recovered
         entries for debug logging.
         """
+        suffix_pat = re.compile(r"\b[A-Za-z]?\d{3,4}\b")
+        cleaned_members = [
+            (m, self._clean_member_name(m, suffix_pat)) for m in guild_members
+        ]
+        guild_set = {
+            re.sub(r"\s*[A-Za-z]\d{3,4}\s*$", "", member).strip()
+            for member in guild_members
+        }
         recovered_set: set[str] = {r[1] for r in supplemental if r[1]}
         qwen_recovered: list[dict] = []
         for entry in bbox_debug:
@@ -1610,10 +1631,16 @@ class GuildMemberScanMixin(BaseClass):
             recovered = ocr_backend.extract_player_name(crop)
             if not recovered:
                 continue
-            matched = next(
-                (m for m in guild_set if m.lower() == recovered.lower()), None
+            matched, best_ratio = self._find_best_member_match(
+                recovered,
+                cleaned_members,
+                suffix_pat,
+                allow_hangul_floor=False,
             )
-            if matched and matched not in recovered_set:
+            if (
+                best_ratio >= self._GUILD_NAME_CORRECTION_THRESHOLD
+                and matched not in recovered_set
+            ):
                 rank_str = entry.get("rank")
                 score_str = next(
                     (b["text"] for b in entry_blocks if b.get("col") == "score"),
@@ -2036,6 +2063,9 @@ class GuildMemberScanMixin(BaseClass):
             self._ocr_debug.append(
                 {
                     "type": "activeness",
+                    "backend_used": "rapidocr",
+                    "qwen_supplemented": len(pairs) > pairs_before_qwen,
+                    "qwen_supplement_count": len(pairs) - pairs_before_qwen,
                     "frame": frame_label,
                     "name_blocks": [
                         {"text": b.text, "cy": b.box.center.y} for b in name_blocks
@@ -2161,6 +2191,9 @@ class GuildMemberScanMixin(BaseClass):
             self._ocr_debug.append(
                 {
                     "type": "chest",
+                    "backend_used": "rapidocr",
+                    "qwen_supplemented": len(pairs) > pairs_before_qwen,
+                    "qwen_supplement_count": len(pairs) - pairs_before_qwen,
                     "frame": frame_label,
                     "name_blocks": [
                         {"text": b.text, "cx": b.box.center.x, "cy": b.box.center.y}

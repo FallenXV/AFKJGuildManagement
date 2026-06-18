@@ -28,6 +28,7 @@ class QwenVLOCRBackend(OCRBackend):
 
     MODEL_ID = "Qwen/Qwen2-VL-2B-Instruct"
     MAX_IMAGE_WIDTH_CAP = 540
+    FULL_FRAME_MAX_IMAGE_WIDTH_CAP = 1080
 
     def __init__(self) -> None:
         self._model: Any = None
@@ -229,15 +230,55 @@ class QwenVLOCRBackend(OCRBackend):
             logger.warning(f"Qwen2-VL inference failed: {e}")
             return None
 
-    def _prepare_image(self, screenshot, y_min: int = 0, y_max: int | None = None):
-        """Crop and resize screenshot to MAX_IMAGE_WIDTH_CAP; return PIL Image."""
+    def _parse_json_array_response(
+        self, raw: str | None, context: str
+    ) -> list[Any] | None:
+        """Extract a JSON array from raw model output for structured OCR calls."""
+        if not raw:
+            logger.debug(f"Qwen2-VL {context} parse rejected: empty response.")
+            return None
+
+        match = re.search(r"\[.*\]", raw, re.DOTALL)
+        if not match:
+            logger.debug(
+                f"Qwen2-VL {context} parse rejected: no JSON array in output: "
+                f"{raw[:300]!r}"
+            )
+            return None
+
+        try:
+            data = json.loads(match.group())
+        except json.JSONDecodeError as e:
+            logger.debug(
+                f"Qwen2-VL {context} parse rejected: JSON decode failed: {e} | "
+                f"{match.group()[:300]!r}"
+            )
+            return None
+
+        if not isinstance(data, list):
+            logger.debug(
+                f"Qwen2-VL {context} parse rejected: decoded payload is not a JSON "
+                "array."
+            )
+            return None
+
+        return data
+
+    def _prepare_image(
+        self,
+        screenshot,
+        y_min: int = 0,
+        y_max: int | None = None,
+        max_width: int | None = MAX_IMAGE_WIDTH_CAP,
+    ):
+        """Crop and optionally resize a screenshot, then return a PIL Image."""
         import cv2  # noqa: PLC0415
         from PIL import Image  # noqa: PLC0415
 
         crop = screenshot[y_min:y_max] if y_max else screenshot[y_min:]
         h, w = crop.shape[:2]
-        if w > self.MAX_IMAGE_WIDTH_CAP:
-            new_w = self.MAX_IMAGE_WIDTH_CAP
+        if max_width is not None and w > max_width:
+            new_w = max_width
             new_h = int(h * new_w / w)
             crop = cv2.resize(crop, (new_w, new_h), interpolation=cv2.INTER_AREA)
         return Image.fromarray(cv2.cvtColor(crop, cv2.COLOR_BGR2RGB))
@@ -253,7 +294,12 @@ class QwenVLOCRBackend(OCRBackend):
         if not self._is_available or not self._init_model():
             return None
         try:
-            pil_image = self._prepare_image(screenshot, y_min=300, y_max=1850)
+            pil_image = self._prepare_image(
+                screenshot,
+                y_min=300,
+                y_max=1850,
+                max_width=self.FULL_FRAME_MAX_IMAGE_WIDTH_CAP,
+            )
             messages = [
                 {
                     "role": "user",
@@ -281,13 +327,8 @@ class QwenVLOCRBackend(OCRBackend):
                 }
             ]
             raw = self._run_qwen_inference(messages, max_new_tokens=384)
-            if not raw:
-                return None
-            match = re.search(r"\[.*\]", raw, re.DOTALL)
-            if not match:
-                return None
-            data = json.loads(match.group())
-            if not isinstance(data, list):
+            data = self._parse_json_array_response(raw, "activeness")
+            if data is None:
                 return None
             pairs: list[tuple[str | None, str | None]] = []
             for entry in data:
@@ -316,7 +357,12 @@ class QwenVLOCRBackend(OCRBackend):
         if not self._is_available or not self._init_model():
             return None
         try:
-            pil_image = self._prepare_image(screenshot, y_min=850, y_max=1850)
+            pil_image = self._prepare_image(
+                screenshot,
+                y_min=850,
+                y_max=1850,
+                max_width=self.FULL_FRAME_MAX_IMAGE_WIDTH_CAP,
+            )
             messages = [
                 {
                     "role": "user",
@@ -343,13 +389,8 @@ class QwenVLOCRBackend(OCRBackend):
                 }
             ]
             raw = self._run_qwen_inference(messages, max_new_tokens=384)
-            if not raw:
-                return None
-            match = re.search(r"\[.*\]", raw, re.DOTALL)
-            if not match:
-                return None
-            data = json.loads(match.group())
-            if not isinstance(data, list):
+            data = self._parse_json_array_response(raw, "chest")
+            if data is None:
                 return None
             pairs: list[tuple[str | None, str | None]] = []
             for entry in data:
@@ -378,7 +419,9 @@ class QwenVLOCRBackend(OCRBackend):
         if not self._is_available or not self._init_model():
             return None
         try:
-            pil_image = self._prepare_image(screenshot)
+            pil_image = self._prepare_image(
+                screenshot, max_width=self.FULL_FRAME_MAX_IMAGE_WIDTH_CAP
+            )
             messages = [
                 {
                     "role": "user",
@@ -410,14 +453,8 @@ class QwenVLOCRBackend(OCRBackend):
                 }
             ]
             raw = self._run_qwen_inference(messages, max_new_tokens=256)
-            if not raw:
-                return None
-            match = re.search(r"\[.*\]", raw, re.DOTALL)
-            if not match:
-                logger.debug(f"Qwen2-VL: no JSON array in response: {raw[:300]!r}")
-                return None
-            data = json.loads(match.group())
-            if not isinstance(data, list):
+            data = self._parse_json_array_response(raw, "rankings")
+            if data is None:
                 return None
             rows: list[tuple[str | None, str | None, str | None]] = []
             for entry in data:

@@ -392,3 +392,89 @@ class TestSupplementalNullRankFilter:
         sebv_entries = [r for r in result if r[1] == "Sebv"]
         assert len(sebv_entries) >= 1
         assert sebv_entries[0][0] == "12"
+
+
+class TestQwenSupplementRecovery:
+    def _bot(self):
+        return _GuildScan()
+
+    def test_recover_supplement_names_qwen_uses_fuzzy_hangul_match(self):
+        """Near-correct Hangul reads should match the right member in KR rosters."""
+        bot = self._bot()
+        screenshot = _make_screenshot()
+        mock_qwen = MagicMock(spec=QwenVLOCRBackend)
+        mock_qwen.extract_player_name.return_value = "\uc0ac\uc544\ud1a0\ub07c"
+        supplemental: list[tuple[str | None, str | None, str | None]] = []
+        bbox_debug = [
+            {
+                "rank": "4",
+                "name": "garbled",
+                "blocks": [
+                    {"col": "name_guild", "cy": 320, "text": "garbled"},
+                    {"col": "score", "cy": 320, "text": "47507M"},
+                ],
+            }
+        ]
+
+        recovered = bot._recover_supplement_names_qwen(
+            screenshot,
+            bbox_debug,
+            supplemental,
+            mock_qwen,
+            ["\uc0ac\uc545\ud1a0\ub07c", "\uc0ac\uc545\ub3c4\ub07c"],
+        )
+
+        assert recovered == [{"rank": "4", "name": "\uc0ac\uc545\ud1a0\ub07c"}]
+        assert supplemental == [("4", "\uc0ac\uc545\ud1a0\ub07c", "47507M")]
+
+    def test_recover_supplement_names_qwen_rejects_sub_threshold_hangul_garble(self):
+        """Rankings recovery should not over-match unrelated Hangul text."""
+        bot = self._bot()
+        screenshot = _make_screenshot()
+        mock_qwen = MagicMock(spec=QwenVLOCRBackend)
+        mock_qwen.extract_player_name.return_value = "\uac00\ub098\ub2e4"
+        supplemental: list[tuple[str | None, str | None, str | None]] = []
+        bbox_debug = [
+            {
+                "rank": "4",
+                "name": "garbled",
+                "blocks": [
+                    {"col": "name_guild", "cy": 320, "text": "garbled"},
+                    {"col": "score", "cy": 320, "text": "47507M"},
+                ],
+            }
+        ]
+
+        recovered = bot._recover_supplement_names_qwen(
+            screenshot,
+            bbox_debug,
+            supplemental,
+            mock_qwen,
+            ["\uc0ac\uc545\ud1a0\ub07c", "\uc0ac\uc545\ub3c4\ub07c"],
+        )
+
+        assert recovered == []
+        assert supplemental == []
+
+
+class TestOcrDebugBackendProvenance:
+    def _bot(self):
+        return _GuildScan()
+
+    def test_parse_rankings_rows_marks_rapidocr_when_qwen_falls_back(self):
+        """Fallback frames should record RapidOCR as the backend used."""
+        bot = self._bot()
+        bot._ocr_debug = []
+        bot._rapidocr_supplement = MagicMock()
+        screenshot = _make_screenshot()
+        mock_qwen = MagicMock(spec=QwenVLOCRBackend)
+        mock_qwen.extract_rankings_from_screenshot.return_value = None
+        bbox_rows = [("7", "Sebv", None)]
+
+        with patch.object(
+            bot, "_parse_rankings_bbox", return_value=(bbox_rows, [], [])
+        ):
+            result = bot._parse_rankings_rows(screenshot, mock_qwen)
+
+        assert result == bbox_rows
+        assert bot._ocr_debug[-1]["backend_used"] == "rapidocr"

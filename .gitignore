@@ -46,6 +46,9 @@ vite.config.ts.timestamp-*
 
 /.venv/
 /target/
+.pytest_cache/
+__pycache__/
+*.pyc
 
 # AdbAutoPlayer temporary/debug files
 /debug/

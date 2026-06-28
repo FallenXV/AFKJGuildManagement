@@ -1,6 +1,7 @@
 {
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": false,
     "resources": {
       "../data/": "./data/",
       "pyembed/python": "./",
